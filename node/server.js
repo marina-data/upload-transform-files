@@ -12,6 +12,7 @@ const myLibraryEndpoint = '/api/library';
 
 // Require the upload middleware
 const upload = require('./fileUpload');
+app.use(express.json());
 
 // Set up a route for file uploads
 app.post(`${myLibraryEndpoint}/upload/:checksum`, upload.any(), (req, res) => {
@@ -31,6 +32,16 @@ app.post(`${myLibraryEndpoint}/upload/:checksum`, upload.any(), (req, res) => {
   // collect data from script
   python.stdout.on('data', function (data) {
     console.log('Output from python script ...', data.toString());
+  });
+});
+
+app.post(`${myLibraryEndpoint}/upload-url`, (req, res) => {
+  // Handle the uploaded file
+  res.json({
+    id: req.body.checksum,
+    checksum: req.body.checksum,
+    file_name: req.body.file_name,
+    pre_signed_url: `${myLibraryEndpoint}/upload/${req.body.checksum}`,
   });
 });
 
