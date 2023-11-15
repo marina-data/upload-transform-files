@@ -1,3 +1,4 @@
+const RELATIVE_PATH_TO_PYTHON_SCRIPT = './../python/example.py';
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -22,18 +23,14 @@ app.post(`${myLibraryEndpoint}/upload/:checksum`, upload.any(), (req, res) => {
     status: 'COMPLETE',
   });
 
-  // Fire the python script
-
-  let dataToSend;
-  // spawn new child process to call the python script
+  // Fire the python scriptt
   const python = spawn('python', [
-    path.join(__dirname, './../python/example.py'),
+    path.join(__dirname, RELATIVE_PATH_TO_PYTHON_SCRIPT),
     req.files[0],
   ]);
   // collect data from script
   python.stdout.on('data', function (data) {
-    console.log('Pipe data from python script ...', data.toString());
-    dataToSend = data.toString();
+    console.log('Output from python script ...', data.toString());
   });
 });
 
