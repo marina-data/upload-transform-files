@@ -1,5 +1,8 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
+
+const { spawn } = require('child_process');
 
 const app = express();
 const port = 3030;
@@ -12,12 +15,25 @@ const upload = require('./fileUpload');
 // Set up a route for file uploads
 app.post(`${myLibraryEndpoint}/upload/:checksum`, upload.any(), (req, res) => {
   // Handle the uploaded file
-
   res.json({
     id: req.params.checksum,
     file_name: req.files[0].originalname,
     size: req.files[0].size,
     status: 'COMPLETE',
+  });
+
+  // Fire the python script
+
+  let dataToSend;
+  // spawn new child process to call the python script
+  const python = spawn('python', [
+    path.join(__dirname, './../python/example.py'),
+    req.files[0],
+  ]);
+  // collect data from script
+  python.stdout.on('data', function (data) {
+    console.log('Pipe data from python script ...', data.toString());
+    dataToSend = data.toString();
   });
 });
 
